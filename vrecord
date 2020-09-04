@@ -1779,7 +1779,7 @@ STANDARD_OPTIONS=("NTSC" "PAL")
 QCTOOLSXML_OPTIONS=("Yes, after recording" "Yes, concurrent with recording" "No")
 FRAMEMD5_OPTIONS=("Yes" "No")
 EMBED_LOGS_OPTIONS=("Yes" "No")
-PLAYBACKVIEW_OPTIONS=("Unfiltered" "Quality Control View (mpv)" "Broadcast Range Visual" "Full Range Visual" "Visual + Numerical" "Color Matrix" "Bit Planes")
+PLAYBACKVIEW_OPTIONS=("Unfiltered" "Quality Control View (mpv)" "Broadcast Range Visual" "Audio + Video" "Full Range Visual" "Visual + Numerical" "Color Matrix" "Bit Planes")
 PLAYBACKVIEW_PASS_OPTIONS=("Unfiltered" "Quality Control View (mpv)" "Broadcast Range Visual" "Audio + Video" "Full Range Visual" "Visual + Numerical" "Color Matrix" "Bit Planes")
 
 # GUI mode + CLI reset, edit modes
@@ -1973,11 +1973,13 @@ _set_ffplay_options(){
     FFPLAY_OPTIONS+=(-autoexit)
     if [[ "${RUNTYPE}" = "passthrough" ]] ; then
         FFPLAY_OPTIONS+=("${GRAB_INPUT[@]}")
+    elif [[ "${PLAYBACKVIEW_CHOICE}" = "Audio + Video" ]] ; then
+        FFPLAY_OPTIONS+=(-f lavfi "movie='pipe\:0':${PLAYBACKFILTER}")
     else
         FFPLAY_OPTIONS+=(-i -)
     fi
     FFPLAY_OPTIONS+=(-window_title "${WINDOW_NAME}")
-    if [[ "${DEVICE_INPUT_CHOICE}" = "0" ]] && [[ ! -z "${PLAYBACKFILTER}" ]] ; then
+    if [[ "${DEVICE_INPUT_CHOICE}" = "0" ]] && [[ ! -z "${PLAYBACKFILTER}" ]] && [[ "${PLAYBACKVIEW_CHOICE}" != "Audio + Video" ]] ; then
         FFPLAY_OPTIONS+=(-vf "${PLAYBACKFILTER}")
     fi
     FFPLAY_OPTIONS+=(-af "channelmap=0|1:stereo")
